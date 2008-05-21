@@ -99,6 +99,35 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 	}
 	
 	
+	/**
+	 * This will perform a parallelized request to delete all of the objects.
+	 * 
+	 * @param Array		$actions	This is an array of Amazon_SimpleDB_Model_DeleteAttributes objects.
+	 * 
+	 * @return Array	This is an array of Amazon_SimpleDB_Model_DeleteAttributesResponse objects.
+	 */
+	public function deleteAttributes($actions) {
+		if (!is_array($actions)) {
+			throw new Exception ("Parameter supplied to " . __FUNCTION__ . " is not an array.");
+		}
+		
+		require_once ('Amazon/SimpleDB/Model/DeleteAttributesResponse.php');
+		
+		$parameters = array();
+		foreach ($actions as $action) {
+			$parameters[] = $action->toMap();
+		}
+		
+		$results = $this->_invoke($parameters);
+		$objects = array();
+		foreach ($results as $result) {
+			$objects[] = Amazon_SimpleDB_Model_DeleteAttributesResponse::fromXML($result);
+		}
+		
+		return $objects;
+    }
+	
+	
 	/** Invoke request and return response. */
 	protected function _invoke(array $parameters) {
 		$actionName = $parameters["Action"];
