@@ -207,8 +207,8 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 			curl_setopt($curly[$key], CURLOPT_POSTFIELDS, $data);
 			curl_setopt($curly[$key], CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($curly[$key], CURLOPT_HEADER, 1);
-			curl_setopt($curly[$key], CURLOPT_CONNECTTIMEOUT, 5);
-			curl_setopt($curly[$key], CURLOPT_TIMEOUT, 10);
+			//curl_setopt($curly[$key], CURLOPT_CONNECTTIMEOUT, 5);
+			//curl_setopt($curly[$key], CURLOPT_TIMEOUT, 10);
 			
 			curl_multi_add_handle($multiHandle, $curly[$key]);
 		}
