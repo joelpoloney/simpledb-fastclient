@@ -64,7 +64,9 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 		$results = $this->_invoke($parameters);
 		$objects = array();
 		foreach ($results as $result) {
-			$objects[] = Amazon_SimpleDB_Model_GetAttributesResponse::fromXML($result);
+			if($result != "") {
+				$objects[] = Amazon_SimpleDB_Model_GetAttributesResponse::fromXML($result);
+			}
 		}
 		
 		return $objects;
@@ -92,7 +94,9 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 		$results = $this->_invoke($parameters);
 		$objects = array();
 		foreach ($results as $result) {
-			$objects[] = Amazon_SimpleDB_Model_PutAttributesResponse::fromXML($result);
+			if($result != "") {
+				$objects[] = Amazon_SimpleDB_Model_PutAttributesResponse::fromXML($result);
+			}
 		}
 		
 		return $objects;
@@ -121,7 +125,9 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 		$results = $this->_invoke($parameters);
 		$objects = array();
 		foreach ($results as $result) {
-			$objects[] = Amazon_SimpleDB_Model_DeleteAttributesResponse::fromXML($result);
+			if($result != "") {
+				$objects[] = Amazon_SimpleDB_Model_DeleteAttributesResponse::fromXML($result);
+			}
 		}
 		
 		return $objects;
@@ -201,6 +207,8 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 			curl_setopt($curly[$key], CURLOPT_POSTFIELDS, $data);
 			curl_setopt($curly[$key], CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($curly[$key], CURLOPT_HEADER, 1);
+			curl_setopt($curly[$key], CURLOPT_CONNECTTIMEOUT, 5);
+			curl_setopt($curly[$key], CURLOPT_TIMEOUT, 10);
 			
 			curl_multi_add_handle($multiHandle, $curly[$key]);
 		}
