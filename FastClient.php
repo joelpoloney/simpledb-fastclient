@@ -139,32 +139,39 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 		$actionName = $parameters["Action"];
 		$responses = array();
 		$responseBodies = array();
+		$shouldRetry = FALSE;
 
 		// submit the request and read response body
 		try {
 			// add required request parameters
 			$parameters = $this->_addRequiredParameters($parameters);
-
 			$retries = 0;
+
+			do {
+				// exponential sleep on failed requests
+				if($shouldRetry) {
+					$this->_pauseOnRetry(++$retries, 503);
+					$shouldRetry = FALSE;
+				}
 			
-			// submit the requests
+				// make sure we use the normal client for only 1 request and the FastClient for multiple requests
+				if(is_array($parameters) && count($parameters) == 1) {
+					$parameter = array_pop($parameters);
+					$response = parent::_httpPost($parameter);
+					$responses = array($response);
+				} else {
 			$responses = $this->_httpPost($parameters);
+				}
 			
-			// loop to make sure we received successful response codes (retry if necessary)
+				// loop to make sure we received successful response codes (retry the FastClient if necessary)
 			foreach ($responses as $key => &$response) {
-				do {
 					try {
 						if ($response['Status'] === 200) {
-							$shouldRetry = FALSE;
 							$responseBodies[] = $response['ResponseBody'];
-							$retries = 0;
+							unset($parameters[$key]);
 						} else {
 							if ($response['Status'] === 500 || $response['Status'] === 503) {
 								$shouldRetry = TRUE;
-								$this->_pauseOnRetry(++$retries, $response['Status']);
-								
-								// retry with the parent after the pause
-								$response = parent::_httpPost($parameters[$key]);
 							} else {
 								throw $this->_reportAnyErrors($response['ResponseBody'], $response['Status']);
 							}
@@ -178,9 +185,8 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 							throw new Amazon_SimpleDB_Exception(array('Exception' => $e, 'Message' => $e->getMessage()));
 						}
 					}
-	
+				}
 				} while ($shouldRetry);
-			}
 		} catch (Amazon_SimpleDB_Exception $se) {
 			throw $se;
 		} catch (Exception $t) {
@@ -207,8 +213,10 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 			curl_setopt($curly[$key], CURLOPT_POSTFIELDS, $data);
 			curl_setopt($curly[$key], CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($curly[$key], CURLOPT_HEADER, 1);
-			//curl_setopt($curly[$key], CURLOPT_CONNECTTIMEOUT, 5);
-			//curl_setopt($curly[$key], CURLOPT_TIMEOUT, 10);
+			
+			// these are commented out do to Internal Errors from SimpleDB
+			// curl_setopt($curly[$key], CURLOPT_CONNECTTIMEOUT, 5);
+			// curl_setopt($curly[$key], CURLOPT_TIMEOUT, 10);
 			
 			curl_multi_add_handle($multiHandle, $curly[$key]);
 		}
