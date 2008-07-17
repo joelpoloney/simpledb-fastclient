@@ -212,6 +212,7 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 			curl_setopt($curly[$key], CURLOPT_POST, 1);
 			curl_setopt($curly[$key], CURLOPT_POSTFIELDS, $data);
 			curl_setopt($curly[$key], CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($curly[$key], CURLOPT_HTTPHEADER, array("Content-Type: application/x-www-form-urlencoded; charset=utf-8"));
 			curl_setopt($curly[$key], CURLOPT_HEADER, 1);
 			
 			// these are commented out do to Internal Errors from SimpleDB
