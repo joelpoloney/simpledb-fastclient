@@ -58,7 +58,7 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 		
 		$parameters = array();
 		foreach ($actions as $action) {
-			$parameters[] = $action->toMap();
+			$parameters[] = $this->_convertGetAttributes($action);
 		}
 		
 		$results = $this->_invoke($parameters);
@@ -88,7 +88,7 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 		
 		$parameters = array();
 		foreach ($actions as $action) {
-			$parameters[] = $action->toMap();
+			$parameters[] = $this->_convertPutAttributes($action);
 		}
 		
 		$results = $this->_invoke($parameters);
@@ -119,7 +119,7 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 		
 		$parameters = array();
 		foreach ($actions as $action) {
-			$parameters[] = $action->toMap();
+			$parameters[] = $this->_convertDeleteAttributes($action);
 		}
 		
 		$results = $this->_invoke($parameters);
