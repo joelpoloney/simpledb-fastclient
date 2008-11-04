@@ -131,7 +131,7 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 		}
 		
 		return $objects;
-    }
+	}
 	
 	
 	/** Invoke request and return response. */
@@ -160,11 +160,11 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 					$response = parent::_httpPost($parameter);
 					$responses = array($response);
 				} else {
-			$responses = $this->_httpPost($parameters);
+					$responses = $this->_httpPost($parameters);
 				}
 			
 				// loop to make sure we received successful response codes (retry the FastClient if necessary)
-			foreach ($responses as $key => &$response) {
+				foreach ($responses as $key => &$response) {
 					try {
 						if ($response['Status'] === 200) {
 							$responseBodies[] = $response['ResponseBody'];
@@ -214,6 +214,7 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 			curl_setopt($curly[$key], CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($curly[$key], CURLOPT_HTTPHEADER, array("Content-Type: application/x-www-form-urlencoded; charset=utf-8"));
 			curl_setopt($curly[$key], CURLOPT_HEADER, 1);
+			curl_setopt($curly[$key], CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
 			
 			// these are commented out do to Internal Errors from SimpleDB
 			// curl_setopt($curly[$key], CURLOPT_CONNECTTIMEOUT, 5);
