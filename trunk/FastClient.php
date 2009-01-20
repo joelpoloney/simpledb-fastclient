@@ -15,7 +15,7 @@
  * This file should be placed in the same directory as its parent
  * class, Client.php.
  *
- * Copyright (c) 2008 Joel Poloney
+ * Copyright (c) 2008-2009 Joel Poloney
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -254,6 +254,9 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 			$parameter['Timestamp'] = $this->_getFormattedTimestamp();
 			$parameter['Version'] = self::SERVICE_VERSION;      
 			$parameter['SignatureVersion'] = $this->_config['SignatureVersion'];
+			if ($parameters['SignatureVersion'] > 1) {
+				$parameters['SignatureMethod'] = $this->_config['SignatureMethod'];
+			}
 			$parameter['Signature'] = $this->_signParameters($parameter, $this->_awsSecretAccessKey);
 		} 
 		
