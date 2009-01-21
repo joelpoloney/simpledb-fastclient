@@ -204,6 +204,16 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 		$multiHandle = curl_multi_init(); // multi handle
 		$url = parse_url ($this->_config['ServiceURL']);
 				
+		$port = array_key_exists('port',$url) ? $url['port'] : null;
+		switch ($url['scheme']) {
+            case 'https':
+                $port = $port === null ? 443 : $port;
+                break;
+            default:
+                $port = $port == null ? 80 : $port;
+                break;
+        }
+		
 		foreach ($parameters as $key => $data) {
 			$curly[$key] = curl_init($url['scheme'] . "://" . $url['host']);
 			
@@ -211,6 +221,7 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 			
 			curl_setopt($curly[$key], CURLOPT_POST, 1);
 			curl_setopt($curly[$key], CURLOPT_POSTFIELDS, $data);
+			curl_setopt($curly[$key], CURLOPT_PORT, $port);
 			curl_setopt($curly[$key], CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($curly[$key], CURLOPT_HTTPHEADER, array("Content-Type: application/x-www-form-urlencoded; charset=utf-8"));
 			curl_setopt($curly[$key], CURLOPT_HEADER, 1);
@@ -250,14 +261,7 @@ class Amazon_SimpleDB_Fast_Client extends Amazon_SimpleDB_Client {
 	/** Add authentication related and version parameters */
 	protected function _addRequiredParameters(array $parameters) {
 		foreach ($parameters as &$parameter) {
-			$parameter['AWSAccessKeyId'] = $this->_awsAccessKeyId;
-			$parameter['Timestamp'] = $this->_getFormattedTimestamp();
-			$parameter['Version'] = self::SERVICE_VERSION;      
-			$parameter['SignatureVersion'] = $this->_config['SignatureVersion'];
-			if ($parameters['SignatureVersion'] > 1) {
-				$parameters['SignatureMethod'] = $this->_config['SignatureMethod'];
-			}
-			$parameter['Signature'] = $this->_signParameters($parameter, $this->_awsSecretAccessKey);
+			$parameter = parent::_addRequiredParameters($parameter);
 		} 
 		
 		return $parameters;
